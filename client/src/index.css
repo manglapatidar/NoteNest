@@ -1,0 +1,18 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  font-family: 'Manrope', sans-serif;
+}
+
+:root {
+  --toastify-color-success: #00C896;
+  --toastify-color-error: #00C896;
+  --toastify-color-warning: #00C896;
+  --toastify-color-info: #00C896;
+  --toastify-icon-color-success: #00C896;
+  --toastify-icon-color-error: #00C896;
+  --toastify-icon-color-warning: #00C896;
+  --toastify-icon-color-info: #00C896;
+}
