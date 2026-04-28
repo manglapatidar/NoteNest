@@ -28,6 +28,7 @@ connectDB()
 app.use(cors({
     origin: [
         "http://localhost:5173",
+        "http://localhost:5174",
         "https://notenest-qlyi.onrender.com",
         "https://notenest-1-24gm.onrender.com"
     ],
@@ -72,5 +73,5 @@ if (process.env.NODE_ENV === "production") {
 app.use(errorHandler)
 
 app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`.bgCyan.white)
+    console.log(`Server is running on port ${PORT}`)
 })
