@@ -142,7 +142,7 @@ export default function NoteDetailPage() {
       let requestData = {};
 
       if (note.fileUrl) { // It's a PDF
-        const fileUrl = note.fileUrl.startsWith('http') ? note.fileUrl : `http://localhost:8080${note.fileUrl}`; // PDF ka URL banaya
+        const fileUrl = note.fileUrl;
         const fileRes = await fetch(fileUrl); // Us Url se PDF download kiya
         const blob = await fileRes.blob();
         
@@ -419,7 +419,7 @@ export default function NoteDetailPage() {
           <h2 className="font-display text-sm font-bold text-[#52525B] uppercase tracking-widest mb-4">Note Content</h2>
           {note.fileUrl ? (
             <a
-              href={`http://localhost:8080${note.fileUrl}`}
+              href={note.fileUrl}
               target="_blank" rel="noreferrer"
               className="inline-flex items-center gap-2 bg-[#161719] border border-[#1F2023] text-[#00C896] rounded-xl px-4 py-2 text-sm hover:border-[#00C896]/50 transition-all"
             >
