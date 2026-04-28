@@ -56,17 +56,18 @@ if (process.env.NODE_ENV === "production") {
 
     // Express v5 requires a named parameter for wildcards (/*splat)
     app.get('/*splat', (req, res) => {
-        res.sendFile(path.join(buildPath, 'index.html'), (err) => {
-            if (err) {
-                // If index.html is missing , this provides a clearer error
-                res.status(500).send("Build File index.html not found. Ensure you ran 'npm run build'")
-            }
-        });
+        res.sendFile(path.join(buildPath, 'index.html'))
+        // , (err) => {
+        //     if (err) {
+        //         // If index.html is missing , this provides a clearer error
+        //         res.status(500).send("Build File index.html not found. Ensure you ran 'npm run build'")
+        //     }
+        // });
     });
-} else {
-    app.get("/", (req, res) => {
-        res.send("API is running...(Development Mode)");
-    });
+// } else {
+//     app.get("/", (req, res) => {
+//         res.send("API is running...(Development Mode)");
+//     });
 }
 
 
