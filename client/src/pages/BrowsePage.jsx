@@ -5,7 +5,7 @@ import { toast } from 'react-toastify';
 import axios from 'axios';
 import { useSelector } from 'react-redux';
 
-const API_URL = 'http://localhost:8080/api';
+const API_URL = '/api';
 
 const SORT_OPTIONS = [
   { value: 'newest', label: 'Newest First', icon: '↓' },

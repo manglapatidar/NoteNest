@@ -5,7 +5,7 @@ import { useSelector } from 'react-redux';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 
-const API_URL = 'http://localhost:8080/api/subjects';
+const API_URL = '/api/subjects';
 
 export default function SubjectManager() {
   const [subjects, setSubjects] = useState([]);
