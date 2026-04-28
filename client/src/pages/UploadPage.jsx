@@ -22,7 +22,7 @@ const UploadPage = () => {
   // Fetch subjects — no token needed (public route)
   const fetchSubjects = async () => {
     try {
-      const { data } = await axios.get('http://localhost:8080/api/subjects');
+      const { data } = await axios.get('/api/subjects');
       setSubjects(data);
     } catch (error) {
       toast.error('Failed to load subjects');
@@ -57,7 +57,7 @@ const UploadPage = () => {
         data.append("file", file);
       }
 
-      await axios.post('http://localhost:8080/api/notes', data, {
+      await axios.post('/api/notes', data, {
         headers: {
           Authorization: `Bearer ${user?.token}`,  
           "Content-Type": "multipart/form-data"
@@ -119,7 +119,7 @@ const UploadPage = () => {
             >
               <option value="" disabled>Select a subject</option>
               {subjects.map((sub) => (
-                // ✅ value mein sub._id — backend ObjectId expect karta hai
+                // value mein sub._id — backend ObjectId expect karta hai
                 <option key={sub._id} value={sub._id}>{sub.name}</option>
               ))}
             </select>

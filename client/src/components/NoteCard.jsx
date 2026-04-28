@@ -5,7 +5,7 @@ import { useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import axios from 'axios';
 
-const API_URL = 'http://localhost:8080/api';
+const API_URL = '/api';
 
 export default function NoteCard({ note, index = 0, showDelete = false, onDelete }) {
   const { user } = useSelector((state) => state.auth);

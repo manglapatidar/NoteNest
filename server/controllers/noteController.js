@@ -278,22 +278,22 @@ const updateNoteFile = async (req, res) => {
       return res.status(403).json({ message: "Not authorized" });
     }
 
-    // ✅ Title update
+    //  Title update
     if (req.body.title && req.body.title.trim()) {
       note.title = req.body.title.trim();
     }
 
-    // ✅ Content update
+    //  Content update
     if (req.body.content !== undefined) {
       note.content = req.body.content;
     }
 
-    // ✅ Subject update
+    //  Subject update
     if (req.body.subject && mongoose.Types.ObjectId.isValid(req.body.subject)) {
       note.subject = req.body.subject;
     }
 
-    // ✅ File update — old file delete, new save
+    //  File update — old file delete, new save
     if (req.file) {
       if (note.fileUrl) {
         const oldPath = `./server${note.fileUrl}`;
@@ -307,7 +307,7 @@ const updateNoteFile = async (req, res) => {
       note.fileSize = req.file.size;
     }
 
-    // ✅ Status wapis pending karo taaki admin re-approve kare
+    // Status wapis pending karo taaki admin re-approve kare
     note.status = "pending";
 
     await note.save();

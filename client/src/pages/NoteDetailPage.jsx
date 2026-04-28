@@ -9,7 +9,7 @@ import { getComments, postComment, deleteComment, resetComments } from '../featu
 import { rateNote } from '../features/rating/ratingSlice';
 import Loader from '../components/Loader';
 
-const API_URL = 'http://localhost:8080/api';
+const API_URL = '/api';
 
 export default function NoteDetailPage() {
   const { noteId } = useParams();
