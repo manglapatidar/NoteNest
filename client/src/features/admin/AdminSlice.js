@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import adminService from './adminService';
+import adminService from './AdminService';
 
 const initialState = {
   stats: null,
