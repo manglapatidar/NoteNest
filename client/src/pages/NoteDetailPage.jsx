@@ -42,6 +42,7 @@ export default function NoteDetailPage() {
   useEffect(() => {
     dispatch(getNoteById(noteId));
     dispatch(getComments(noteId));
+    
     return () => {
       dispatch(clearNote());
       dispatch(resetComments());
@@ -136,16 +137,17 @@ export default function NoteDetailPage() {
     
     if (!note?.content && !note?.fileUrl) return toast.error('This note has no text content to summarize');
     
-    setSummaryLoading(true);
+    setSummaryLoading(true);  
     try {
       let requestData = {};
 
       if (note.fileUrl) { // It's a PDF
-        const fileUrl = note.fileUrl.startsWith('http') ? note.fileUrl : `http://localhost:8080${note.fileUrl}`;
-        const fileRes = await fetch(fileUrl);
+        const fileUrl = note.fileUrl.startsWith('http') ? note.fileUrl : `http://localhost:8080${note.fileUrl}`; // PDF ka URL banaya
+        const fileRes = await fetch(fileUrl); // Us Url se PDF download kiya
         const blob = await fileRes.blob();
         
-        const base64 = await new Promise((resolve) => {
+        const base64 = await new Promise((resolve) => { // Blob ko Base64 mein convert kiya
+
           const reader = new FileReader();
           reader.onloadend = () => {
             const base64String = reader.result.split(',')[1];
@@ -154,7 +156,8 @@ export default function NoteDetailPage() {
           reader.readAsDataURL(blob);
         });
 
-        requestData = { pdfBase64: base64, mimeType: 'application/pdf' };
+        requestData = { pdfBase64: base64, mimeType: 'application/pdf' }; // Base64 backend ko bheja
+
       } else {
         requestData = { content: note.content };
       }

@@ -1,7 +1,5 @@
 import React from 'react';
 
-
-
 const DYNAMIC_PALETTE = [
   'bg-[#6C63FF]/10 text-[#6C63FF] border border-[#6C63FF]/20',
   'bg-[#10B981]/10 text-[#10B981] border border-[#10B981]/20',

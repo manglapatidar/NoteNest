@@ -1,5 +1,9 @@
 import mongoose from "mongoose"
 import colors from "colors"
+import dns from "dns"
+
+// Workaround for Node.js DNS resolution issues on some Windows networks
+dns.setServers(['8.8.8.8', '8.8.4.4']);
 
 const connectDB = async ()=>{
     try {

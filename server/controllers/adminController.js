@@ -47,7 +47,7 @@ const getNotes = async (req, res) => {
     const filter = status ? { status } : {};
     const notes = await Note.find(filter)
       .populate("user", "name email")
-      .populate("subject", "name")  // ✅ YE ADD KARO
+      .populate("subject", "name")  
       .sort({ createdAt: -1 });
     res.status(200).json(notes);
   } catch (error) {

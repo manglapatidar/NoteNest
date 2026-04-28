@@ -7,13 +7,15 @@
   "type": "module",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "node --watch server/index.js"
-  },
+    "server": "node server/index.js",
+    "client": "cd client && npm run dev",
+    "build": "npm install && cd client && npm install",
+"dev": "concurrently \"npm run server\" \"npm run client\""  },
   "dependencies": {
     "@google/generative-ai": "^0.24.1",
     "bcryptjs": "^3.0.3",
     "colors": "^1.4.0",
+    "concurrently": "^9.2.1",
     "cors": "^2.8.6",
     "dotenv": "^17.3.1",
     "express": "^5.2.1",

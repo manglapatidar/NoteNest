@@ -33,10 +33,6 @@ app.use(cors({
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 
-app.get("/", (req, res) => {
-    res.json({ message: "WELCOME TO NoteNest API.." })
-})
-
 app.use("/api/auth", authRoutes)
 app.use("/api/subjects", subjectRoutes)
 app.use("/api/notes", noteRoutes)
@@ -50,6 +46,29 @@ app.use("/api/admin", adminRoutes)
 
 
 app.use("/api/notes/summarize", summarizeRoute);
+
+const buildPath = path.resolve(__dirname, '../client/dist');
+
+// Static File Serving & SPA Routing
+if (process.env.NODE_ENV === "production") {
+    // Serve static files from the build directory
+    app.use(express.static(buildPath));
+
+    // Express v5 requires a named parameter for wildcards (/*splat)
+    app.get('/*splat', (req, res) => {
+        res.sendFile(path.join(buildPath, 'index.html'), (err) => {
+            if (err) {
+                // If index.html is missing , this provides a clearer error
+                res.status(500).send("Build File index.html not found. Ensure you ran 'npm run build'")
+            }
+        });
+    });
+} else {
+    app.get("/", (req, res) => {
+        res.send("API is running...(Development Mode)");
+    });
+}
+
 
 app.use(errorHandler)
 

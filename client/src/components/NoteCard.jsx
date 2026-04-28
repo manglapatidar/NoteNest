@@ -47,7 +47,7 @@ export default function NoteCard({ note, index = 0, showDelete = false, onDelete
 
   const handleRating = async (e, star) => {
     e.preventDefault();
-    if (!user) return toast.error('Pehle login karein');
+    if (!user) return toast.error('Firstly login');
     if (userRating === star) return;
     try {
       const { data } = await axios.post(
