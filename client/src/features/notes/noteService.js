@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = 'http://localhost:8080/api/notes/';
+const API_URL = '/api/notes/';
 const getConfig = (token) => ({ headers: { Authorization: `Bearer ${token}` } });
 
 const getNotes = async () => {
