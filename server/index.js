@@ -56,10 +56,15 @@ app.use("/uploads", express.static(path.join(__dirname, "uploads")))
 
 // Production SPA Routing
 if (process.env.NODE_ENV === "production") {
-    const buildPath = path.resolve(__dirname, '../client/dist');
+    const buildPath = path.join(__dirname, "../client/dist");
     app.use(express.static(buildPath));
-    app.get('/:splat*', (req, res) => {
-        res.sendFile(path.join(buildPath, 'index.html'));
+    
+    // Crash-proof SPA handler for all non-API routes
+    app.use((req, res, next) => {
+        if (!req.path.startsWith('/api')) {
+            return res.sendFile(path.join(buildPath, "index.html"));
+        }
+        next();
     });
 }
 
