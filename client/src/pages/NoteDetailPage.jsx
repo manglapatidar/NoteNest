@@ -8,6 +8,7 @@ import { getNoteById, toggleSaveNote, deleteNote, clearNote } from '../features/
 import { getComments, postComment, deleteComment, resetComments } from '../features/comments/commentSlice';
 import { rateNote } from '../features/rating/ratingSlice';
 import Loader from '../components/Loader';
+import { Search, Plus, Filter, ChevronDown, Check, LayoutGrid, BookOpen, Clock, Star, Heart, Zap, FileText, Trash2, Eye } from 'lucide-react';
 
 const API_URL = '/api';
 
@@ -135,31 +136,36 @@ export default function NoteDetailPage() {
   const handleSummarize = async () => {
     if (showSummary) { setShowSummary(false); return; }
     
-    if (!note?.content && !note?.fileUrl) return toast.error('This note has no text content to summarize');
+    if (!note?.content && !note?.fileUrl) return toast.error('This note has no content to summarize');
+    
+    if (!note?._id) return toast.error('Note ID not found. Please refresh.');
     
     setSummaryLoading(true);  
     try {
-      let requestData = {};
+      console.log("Requesting summary for noteId:", note._id);
+      let requestData = { noteId: note._id };
 
-      if (note.fileUrl) { // It's a PDF
-        const fileUrl = note.fileUrl;
-        const fileRes = await fetch(fileUrl); // Us Url se PDF download kiya
-        const blob = await fileRes.blob();
-        
-        const base64 = await new Promise((resolve) => { // Blob ko Base64 mein convert kiya
-
-          const reader = new FileReader();
-          reader.onloadend = () => {
-            const base64String = reader.result.split(',')[1];
-            resolve(base64String);
-          };
-          reader.readAsDataURL(blob);
-        });
-
-        requestData = { pdfBase64: base64, mimeType: 'application/pdf' }; // Base64 backend ko bheja
-
+      if (note.fileUrl) {
+        // PDF fallback logic (User prefers base64)
+        try {
+          const fileUrl = note.fileUrl.startsWith('http') ? note.fileUrl : window.location.origin + note.fileUrl;
+          const fileRes = await fetch(fileUrl);
+          if (fileRes.ok) {
+            const blob = await fileRes.blob();
+            const base64 = await new Promise((resolve, reject) => {
+              const reader = new FileReader();
+              reader.onloadend = () => resolve(reader.result.split(',')[1]);
+              reader.onerror = reject;
+              reader.readAsDataURL(blob);
+            });
+            requestData.pdfBase64 = base64;
+            requestData.mimeType = 'application/pdf';
+          }
+        } catch (pdfErr) {
+          console.warn("Base64 pre-processing failed, server will try disk instead:", pdfErr);
+        }
       } else {
-        requestData = { content: note.content };
+        requestData.content = note.content;
       }
 
       const { data } = await axios.post(
@@ -169,15 +175,22 @@ export default function NoteDetailPage() {
           headers: {
             'Content-Type': 'application/json',
             Authorization: `Bearer ${user?.token}`
-          }
+          },
+          timeout: 60000 // 60 seconds timeout for AI
         }
       );
       
+      if (!data.summary || data.summary.length === 0) {
+        throw new Error("AI returned an empty summary. Please try again.");
+      }
+
       setSummary(data.summary);
       setShowSummary(true);
-    } catch (error) {
-      console.error(error);
-      toast.error('Failed to generate summary. Please try again.');
+      toast.success('Summary generated!');
+    } catch (err) {
+      console.error("Summary error:", err);
+      const errorMessage = err.response?.data?.error || err.response?.data?.message || err.message;
+      toast.error(`Summary failed: ${errorMessage}`);
     } finally {
       setSummaryLoading(false);
     }
@@ -274,14 +287,26 @@ export default function NoteDetailPage() {
             <button
               onClick={handleSummarize}
               disabled={summaryLoading}
-              className="bg-[#00C896] hover:bg-[#00A87E] disabled:opacity-60 text-[#08090A] font-semibold text-sm rounded-xl px-4 py-2 hover:scale-[1.02] flex items-center justify-center gap-2 transition-all duration-200 min-w-[170px]"
+              className={`
+                relative overflow-hidden group
+                ${summaryLoading ? 'bg-[#00C896]/50' : 'bg-[#00C896] hover:bg-[#00E5B0]'} 
+                text-[#08090A] font-bold text-sm rounded-xl px-6 py-2.5 
+                hover:scale-[1.02] hover:-translate-y-0.5 active:scale-[0.98]
+                flex items-center justify-center gap-2 transition-all duration-300 min-w-[200px]
+                shadow-lg shadow-[#00C896]/20 hover:shadow-[#00C896]/40
+              `}
             >
               {summaryLoading ? (
                 <>
                   <div className="w-4 h-4 border-2 border-[#08090A] border-t-transparent rounded-full animate-spin"></div>
-                  <span>Summarizing...</span>
+                  <span className="animate-pulse">Analyzing Content...</span>
                 </>
-              ) : showSummary ? '✦ Hide Summary' : '✦ Summarize with AI'}
+              ) : (
+                <>
+                  <Zap size={16} className={`transition-transform duration-500 ${showSummary ? 'rotate-180 text-[#08090A]/70' : 'group-hover:scale-125'}`} />
+                  <span>{showSummary ? 'Hide Analysis' : 'Generate AI Summary'}</span>
+                </>
+              )}
             </button>
 
             {canEdit && (

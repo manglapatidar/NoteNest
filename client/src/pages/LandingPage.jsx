@@ -1,14 +1,24 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 
 export default function LandingPage() {
   const navigate = useNavigate();
+  const { user } = useSelector((state) => state.auth);
+  const isLoggedIn = !!user;
+
+  const handleStartBrowsing = () => {
+    if (isLoggedIn) {
+      navigate('/browse');
+    } else {
+      navigate('/register');
+    }
+  };
 
   return (
     <div className="min-h-screen bg-[#08090A] overflow-x-hidden pt-16">
       {/* ━━━━━━━━━━ HERO SECTION ━━━━━━━━━━ */}
       <section className="min-h-screen flex flex-col items-center justify-center text-center px-6 relative -mt-16 pt-16 pb-32">
-
         {/* Background Elements */}
         <div className="absolute inset-0 pointer-events-none overflow-hidden">
           <div className="absolute inset-0 bg-[linear-gradient(#1F2023_1px,transparent_1px),linear-gradient(90deg,#1F2023_1px,transparent_1px)] bg-[size:60px_60px] opacity-20 animate-fade-in"></div>
@@ -36,12 +46,12 @@ export default function LandingPage() {
           </p>
 
           <div className="opacity-0 animate-fade-up mt-10 flex flex-col sm:flex-row gap-3 justify-center" style={{ animationDelay: '500ms', animationFillMode: 'forwards' }}>
-            <button onClick={() => navigate('/register')} className="relative group bg-[#00C896] text-[#08090A] font-bold rounded-xl px-8 py-3.5 text-base shadow-[0_0_40px_-10px_rgba(0,200,150,0.4)] hover:shadow-[0_0_60px_-15px_rgba(0,200,150,0.6)] hover:-translate-y-1 transition-all duration-300">
+            <button onClick={handleStartBrowsing} className="relative group bg-[#00C896] text-[#08090A] font-bold rounded-xl px-8 py-3.5 text-base shadow-[0_0_40px_-10px_rgba(0,200,150,0.4)] hover:shadow-[0_0_60px_-15px_rgba(0,200,150,0.6)] hover:-translate-y-1 transition-all duration-300">
               <span className="relative z-10 flex items-center gap-2">Start Browsing Notes <span className="transition-transform group-hover:translate-x-1">&rarr;</span></span>
               <div className="absolute inset-0 bg-white/20 rounded-xl blur-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
             </button>
-            <button onClick={() => navigate('/register')} className="bg-transparent border border-[#1F2023] hover:border-[#00C896]/50 text-[#A1A1AA] hover:text-[#F5F5F5] font-medium rounded-xl px-7 py-3 text-base hover:-translate-y-0.5 transition-all duration-200 focus:outline-none">
-              See how it works
+            <button onClick={() => navigate(isLoggedIn ? '/browse' : '/register')} className="bg-transparent border border-[#1F2023] hover:border-[#00C896]/50 text-[#A1A1AA] hover:text-[#F5F5F5] font-medium rounded-xl px-7 py-3 text-base hover:-translate-y-0.5 transition-all duration-200 focus:outline-none">
+              {isLoggedIn ? 'Explore Feed' : 'See how it works'}
             </button>
           </div>
 

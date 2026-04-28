@@ -1,10 +1,27 @@
 import React, { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, useNavigate, useLocation } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useNavigate, useLocation, Navigate } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useSelector, useDispatch } from 'react-redux';
 import { logout } from './features/auth/authSlice';
 import Loader from './components/Loader';
+
+// Protected Route Component
+const ProtectedRoute = ({ children, isAdmin = false }) => {
+  const { user } = useSelector((state) => state.auth);
+  const location = useLocation();
+
+  if (!user) {
+    // Redirect to register if not logged in
+    return <Navigate to="/register" state={{ from: location }} replace />;
+  }
+
+  if (isAdmin && user.role !== 'admin') {
+    return <Navigate to="/" replace />;
+  }
+
+  return children;
+};
 
 function PageTransition({ children }) {
   const location = useLocation();
@@ -60,19 +77,57 @@ function AppContent() {
       <PageTransition>
         <Routes>
           <Route path="/" element={<LandingPage />} />
-          <Route path="/browse" element={<BrowsePage />} />
-          <Route path="/notes/:noteId" element={<NoteDetailPage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
-          <Route path="/upload" element={<UploadPage />} />
-          <Route path="/profile" element={<ProfilePage />} />
+          
+          {/* Protected User Routes */}
+          <Route path="/browse" element={
+            <ProtectedRoute>
+              <BrowsePage />
+            </ProtectedRoute>
+          } />
+          <Route path="/notes/:noteId" element={
+            <ProtectedRoute>
+              <NoteDetailPage />
+            </ProtectedRoute>
+          } />
+          <Route path="/upload" element={
+            <ProtectedRoute>
+              <UploadPage />
+            </ProtectedRoute>
+          } />
+          <Route path="/profile" element={
+            <ProtectedRoute>
+              <ProfilePage />
+            </ProtectedRoute>
+          } />
 
-          {/* Admin Routes */}
-          <Route path="/admin" element={currentUser?.role === 'admin' ? <AdminDashboard /> : <LandingPage />} />
-          <Route path="/admin/pending" element={currentUser?.role === 'admin' ? <AdminPendingNotes /> : <LandingPage />} />
-          <Route path="/admin/all" element={currentUser?.role === 'admin' ? <AdminAllNotes /> : <LandingPage />} />
-          <Route path="/admin/saved" element={currentUser?.role === 'admin' ? <AdminSavedNotes /> : <LandingPage />} />
-          <Route path="/admin/subjects" element={currentUser?.role === 'admin' ? <SubjectManager /> : <LandingPage />} />
+          {/* Protected Admin Routes */}
+          <Route path="/admin" element={
+            <ProtectedRoute isAdmin={true}>
+              <AdminDashboard />
+            </ProtectedRoute>
+          } />
+          <Route path="/admin/pending" element={
+            <ProtectedRoute isAdmin={true}>
+              <AdminPendingNotes />
+            </ProtectedRoute>
+          } />
+          <Route path="/admin/all" element={
+            <ProtectedRoute isAdmin={true}>
+              <AdminAllNotes />
+            </ProtectedRoute>
+          } />
+          <Route path="/admin/saved" element={
+            <ProtectedRoute isAdmin={true}>
+              <AdminSavedNotes />
+            </ProtectedRoute>
+          } />
+          <Route path="/admin/subjects" element={
+            <ProtectedRoute isAdmin={true}>
+              <SubjectManager />
+            </ProtectedRoute>
+          } />
         </Routes>
       </PageTransition>
 

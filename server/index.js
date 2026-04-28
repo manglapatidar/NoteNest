@@ -20,7 +20,7 @@ dotenv.config()
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const PORT = process.env.PORT || 5000
+const PORT = process.env.PORT || 8080
 const app = express()
 
 connectDB()
@@ -36,48 +36,26 @@ app.use(cors({
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 
+// Health Check
+app.get("/", (req, res) => {
+  res.send("API is running...");
+});
+
+// API Routes
 app.use("/api/auth", authRoutes)
 app.use("/api/subjects", subjectRoutes)
+app.use("/api/notes/summarize", summarizeRoute)
 app.use("/api/notes", noteRoutes)
-
-
-app.use("/uploads", express.static(path.join(__dirname, "uploads")))
-
 app.use("/api/rating", ratingRoutes)
 app.use("/api/comments", commentRoutes)
 app.use("/api/admin", adminRoutes)
 
+// Static Files
+app.use("/uploads", express.static(path.join(__dirname, "uploads")))
 
-app.use("/api/notes/summarize", summarizeRoute);
-
-const buildPath = path.resolve(__dirname, '../client/dist');
-
-// Static File Serving & SPA Routing
-if (process.env.NODE_ENV === "production") {
-    // Serve static files from the build directory
-    app.use(express.static(buildPath));
-
-    // Express v5 requires a named parameter for wildcards (/*splat)
-    app.get('/*splat', (req, res) => {
-        res.sendFile(path.join(buildPath, 'index.html'))
-        // , (err) => {
-        //     if (err) {
-        //         // If index.html is missing , this provides a clearer error
-        //         res.status(500).send("Build File index.html not found. Ensure you ran 'npm run build'")
-        //     }
-        // });
-    });
-// } else {
-//     app.get("/", (req, res) => {
-//         res.send("API is running...(Development Mode)");
-//     });
-}
-
-
+// Error Handling
 app.use(errorHandler)
 
-
-
 app.listen(PORT, () => {
-    console.log(`SERVER IS RUNNING AT PORT : ${PORT}`.bgBlue.black)
+    console.log(`Server is running on port ${PORT}`.bgCyan.white)
 })

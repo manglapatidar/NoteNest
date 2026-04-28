@@ -1,52 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine } from 'recharts';
 import SubjectBadge from '../../components/SubjectBadge';
 import { toast } from 'react-toastify'
 import Loader from '../../components/Loader';
 import { getStats, getNotes, approveNote, rejectNote, deleteNote, reset, } from '../../features/admin/AdminSlice';
-
-export function AdminSidebar() {
-  const location = useLocation();
-  const navigate = useNavigate();
-
-  const navItems = [
-    { label: 'Overview', icon: '⊞', path: '/admin' },
-    { label: 'Pending Notes', icon: '◎', path: '/admin/pending' },
-    { label: 'All Notes', icon: '≡', path: '/admin/all' },
-    { label: 'Saved Notes', icon: '♥', path: '/admin/saved' },
-    { label: 'Subjects', icon: '◈', path: '/admin/subjects' },
-  ];
-
-  return (
-    <div className="w-56 fixed left-0 top-16 bottom-0 bg-[#0F1012] border-r border-[#1F2023] px-3 py-6 hidden md:flex flex-col gap-1 opacity-0 animate-fade-right z-40" style={{ animationDelay: '100ms', animationFillMode: 'forwards' }}>
-      <div className="text-[#52525B] text-xs font-semibold uppercase tracking-widest px-3 mb-3">Admin Panel</div>
-
-      {navItems.map((item, i) => {
-        const isActive = location.pathname === item.path;
-        return (
-          <div
-            key={item.label}
-            onClick={() => navigate(item.path)}
-            className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 cursor-pointer hover:translate-x-0.5 opacity-0 animate-fade-right ${isActive ? 'bg-[#00C896]/8 text-[#00C896] border border-[#00C896]/15' : 'text-[#52525B] hover:bg-[#161719] hover:text-[#A1A1AA] border border-transparent'
-              }`}
-            style={{ animationDelay: `${150 + i * 100}ms`, animationFillMode: 'forwards' }}
-          >
-            <span className="text-lg">{item.icon}</span>
-            <span>{item.label}</span>
-          </div>
-        );
-      })}
-
-      <div className="mt-auto border-t border-[#1F2023] pt-4 flex items-center gap-2 px-2">
-        <div className="w-7 h-7 rounded-lg bg-[#00C896]/10 text-[#00C896] text-xs font-bold flex items-center justify-center">A</div>
-        <span className="text-[#A1A1AA] text-sm">Admin User</span>
-        <span className="ml-auto bg-[#00C896]/10 text-[#00C896] rounded px-1.5 py-0.5 text-[10px] uppercase font-bold">Admin</span>
-      </div>
-    </div>
-  );
-}
+import AdminSidebar from '../../components/AdminSidebar';
+import { FileText } from 'lucide-react';
 
 export default function AdminDashboard() {
   const dispatch = useDispatch();
@@ -133,162 +94,199 @@ export default function AdminDashboard() {
   ];
 
   return (
-    <div className="min-h-screen bg-[#08090A] flex pt-16">
+    <div className="min-h-screen bg-[#08090A] flex pt-16 overflow-x-hidden">
       <AdminSidebar />
 
-      <div className="md:ml-56 px-6 py-8 flex-1">
+      <div className="md:ml-72 px-6 lg:px-10 py-10 flex-1 max-w-full overflow-hidden">
 
         <div className="opacity-0 animate-fade-up mb-8" style={{ animationDelay: '100ms', animationFillMode: 'forwards' }}>
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between gap-4">
             <div>
-              <p className="text-[#52525B] text-xs font-semibold uppercase tracking-widest mb-1.5">
-                Welcome back
+              <p className="text-[#52525B] text-[10px] font-bold uppercase tracking-[0.2em] mb-1.5 opacity-80">
+                System Overview
               </p>
               <div className="flex items-center gap-3 flex-wrap">
-                <h1 className="font-display text-2xl font-bold text-[#F5F5F5]">
+                <h1 className="font-display text-2xl sm:text-3xl font-bold text-[#F5F5F5]">
                   {displayName}
                   {showCursor && (
                     <span className="inline-block w-0.5 h-6 bg-[#00C896] ml-1 align-middle animate-pulse" />
                   )}
                 </h1>
-                <span className="bg-[#00C896]/10 text-[#00C896] border border-[#00C896]/20 rounded-md px-2.5 py-0.5 text-[11px] font-bold uppercase tracking-wider">
+                <span className="bg-[#00C896]/10 text-[#00C896] border border-[#00C896]/20 rounded-lg px-2.5 py-0.5 text-[11px] font-bold uppercase tracking-wider">
                   Admin
                 </span>
               </div>
-              <p className="text-[#52525B] text-sm mt-1.5">
-                {timeGreeting}! Here's your platform overview.
+              <p className="text-[#52525B] text-sm mt-1.5 max-w-md">
+                {timeGreeting}! Here's a snapshot of what's happening on NoteNest right now.
               </p>
             </div>
 
             <div className="hidden sm:flex flex-col items-end gap-2.5">
               <div className="relative">
-                <div className="absolute inset-0 rounded-full border border-[#00C896]/40 animate-ping" />
-                <div className="w-12 h-12 rounded-full bg-[#00C896]/10 border border-[#00C896]/25 flex items-center justify-center text-[#00C896] text-lg font-bold">
+                <div className="absolute inset-0 rounded-xl border border-[#00C896]/40 animate-ping opacity-20" />
+                <div className="w-12 h-12 rounded-xl bg-[#00C896]/10 border border-[#00C896]/25 flex items-center justify-center text-[#00C896] text-lg font-bold">
                   {adminName?.[0]?.toUpperCase() ?? 'A'}
                 </div>
               </div>
-              <span className="text-[#52525B] text-xs bg-[#0F1012] border border-[#1F2023] rounded-lg px-3 py-1 tabular-nums">
+              <span className="text-[#52525B] text-[10px] font-bold bg-[#0F1012] border border-[#1F2023] rounded-lg px-3 py-1 tabular-nums tracking-wider">
                 {currentTime.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })}
               </span>
             </div>
           </div>
 
-          <div className="mt-5 h-px bg-gradient-to-r from-[#00C896]/30 via-[#00C896]/10 to-transparent" />
+          <div className="mt-8 h-px bg-gradient-to-r from-[#1F2023] via-[#00C896]/20 to-transparent" />
         </div>
 
         {/* STATS CARDS */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
           {statCards.map((stat, i) => (
-            <div key={i} className="opacity-0 animate-fade-up bg-[#0F1012] border border-[#1F2023] rounded-2xl p-5 hover:-translate-y-1 hover:border-[#00C896]/20 hover:shadow-lg hover:shadow-[#00C896]/5 transition-all duration-300 relative overflow-hidden" style={{ animationDelay: stat.delay, animationFillMode: 'forwards' }}>
+            <div key={i} className="opacity-0 animate-fade-up bg-[#0F1012] border border-[#1F2023] rounded-2xl p-5 hover:-translate-y-1 hover:border-[#00C896]/30 transition-all duration-300 relative overflow-hidden group" style={{ animationDelay: stat.delay, animationFillMode: 'forwards' }}>
               <div className="flex justify-between items-start mb-4">
-                <span className="text-[#52525B] text-xs font-semibold uppercase tracking-widest">{stat.label}</span>
-                <div className={`w-6 h-6 rounded flex items-center justify-center text-xs ${stat.iconCol}`}>{stat.icon}</div>
+                <span className="text-[#52525B] text-[10px] font-bold uppercase tracking-widest">{stat.label}</span>
+                <div className={`w-8 h-8 rounded-xl flex items-center justify-center text-sm transition-transform group-hover:scale-110 ${stat.iconCol}`}>{stat.icon}</div>
               </div>
-              <div className={`font-display text-4xl font-bold mb-2 ${stat.valCol}`}>
+              <div className={`font-display text-4xl font-bold mb-2 tracking-tight ${stat.valCol}`}>
                 {isLoading ? '…' : stat.value}
               </div>
-              <div className={`text-xs ${stat.footCol}`}>{stat.footer}</div>
-              <div className={`absolute bottom-0 left-5 h-0.5 w-10 ${stat.acc}`}></div>
+              <div className={`text-[11px] font-medium ${stat.footCol}`}>{stat.footer}</div>
+              <div className={`absolute bottom-0 left-0 h-1 transition-all duration-300 group-hover:w-full w-8 ${stat.acc}`}></div>
             </div>
           ))}
         </div>
 
         {/* CHARTS ROW */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 mb-8">
-          <div className="opacity-0 animate-fade-up bg-[#0F1012] border border-[#1F2023] rounded-2xl p-6" style={{ animationDelay: '500ms', animationFillMode: 'forwards' }}>
-            <h3 className="font-display text-sm font-bold text-[#F5F5F5] mb-6">Notes per Subject</h3>
+        <div className="grid grid-cols-1 xl:grid-cols-2 gap-5 mb-8">
+          <div className="opacity-0 animate-fade-up bg-[#0F1012] border border-[#1F2023] rounded-2xl p-6 hover:border-[#1F2023] transition-all" style={{ animationDelay: '500ms', animationFillMode: 'forwards' }}>
+            <div className="flex items-center justify-between mb-8">
+              <h3 className="font-display text-sm font-bold text-[#F5F5F5] flex items-center gap-2">
+                <div className="w-1 h-4 bg-[#00C896] rounded-full"></div>
+                Notes Distribution
+              </h3>
+              <span className="text-[10px] text-[#52525B] font-bold uppercase tracking-wider">Per Subject</span>
+            </div>
             {chartData.length === 0 ? (
-              <div className="flex items-center justify-center h-[220px] text-[#52525B] text-sm">
-                {isLoading ? <Loader fullScreen={false} /> : 'No data available'}
+              <div className="flex flex-col items-center justify-center h-[240px] text-[#52525B] gap-4">
+                <div className="w-12 h-12 rounded-full border-2 border-dashed border-[#1F2023] flex items-center justify-center text-xl opacity-50">📊</div>
+                <span className="text-sm font-medium">{isLoading ? 'Fetching data...' : 'No data available'}</span>
               </div>
             ) : (
-              <ResponsiveContainer width="100%" height={220}>
-                <BarChart data={chartData} barSize={28}>
-                  <CartesianGrid vertical={false} strokeDasharray="3 3" stroke="#1F2023" />
-                  <XAxis dataKey="subject" tick={{ fill: '#52525B', fontSize: 11 }} axisLine={false} tickLine={false} />
-                  <YAxis tick={{ fill: '#52525B', fontSize: 11 }} axisLine={false} tickLine={false} />
-                  <Tooltip contentStyle={{ backgroundColor: '#0F1012', border: '1px solid #1F2023', borderRadius: '12px', color: '#F5F5F5', fontSize: '12px' }} cursor={{ fill: '#161719' }} />
-                  <Bar dataKey="totalNotes" name="Notes" fill="#00C896" radius={[6, 6, 0, 0]} animationDuration={1200} animationEasing="ease-out" />
-                </BarChart>
-              </ResponsiveContainer>
+              <div className="h-[240px] w-full">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={chartData} margin={{ top: 0, right: 0, left: -20, bottom: 0 }}>
+                    <CartesianGrid vertical={false} strokeDasharray="3 3" stroke="#1F2023" />
+                    <XAxis dataKey="subject" tick={{ fill: '#52525B', fontSize: 10, fontWeight: 600 }} axisLine={false} tickLine={false} />
+                    <YAxis tick={{ fill: '#52525B', fontSize: 10, fontWeight: 600 }} axisLine={false} tickLine={false} />
+                    <Tooltip 
+                      cursor={{ fill: 'rgba(0, 200, 150, 0.05)' }}
+                      contentStyle={{ backgroundColor: '#08090A', border: '1px solid #1F2023', borderRadius: '12px', padding: '12px' }}
+                      itemStyle={{ color: '#00C896', fontSize: '12px', fontWeight: 'bold' }}
+                      labelStyle={{ color: '#F5F5F5', marginBottom: '4px', fontSize: '11px', fontWeight: '800' }}
+                    />
+                    <Bar dataKey="totalNotes" name="Notes" fill="#00C896" radius={[4, 4, 0, 0]} />
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
             )}
           </div>
 
-          <div className="opacity-0 animate-fade-up bg-[#0F1012] border border-[#1F2023] rounded-2xl p-6" style={{ animationDelay: '600ms', animationFillMode: 'forwards' }}>
-            <h3 className="font-display text-sm font-bold text-[#F5F5F5] mb-6">Avg Rating per Subject</h3>
+          <div className="opacity-0 animate-fade-up bg-[#0F1012] border border-[#1F2023] rounded-2xl p-6 hover:border-[#1F2023] transition-all" style={{ animationDelay: '600ms', animationFillMode: 'forwards' }}>
+            <div className="flex items-center justify-between mb-8">
+              <h3 className="font-display text-sm font-bold text-[#F5F5F5] flex items-center gap-2">
+                <div className="w-1 h-4 bg-[#F59E0B] rounded-full"></div>
+                Rating Performance
+              </h3>
+              <span className="text-[10px] text-[#52525B] font-bold uppercase tracking-wider">Average Score</span>
+            </div>
             {chartData.length === 0 ? (
-              <div className="flex items-center justify-center h-[220px] text-[#52525B] text-sm">
-                {isLoading ? <Loader fullScreen={false} /> : 'No data available'}
+              <div className="flex flex-col items-center justify-center h-[240px] text-[#52525B] gap-4">
+                <div className="w-12 h-12 rounded-full border-2 border-dashed border-[#1F2023] flex items-center justify-center text-xl opacity-50">⭐</div>
+                <span className="text-sm font-medium">{isLoading ? 'Fetching data...' : 'No data available'}</span>
               </div>
             ) : (
-              <ResponsiveContainer width="100%" height={220}>
-                <BarChart data={chartData} barSize={28}>
-                  <CartesianGrid vertical={false} strokeDasharray="3 3" stroke="#1F2023" />
-                  <XAxis dataKey="subject" tick={{ fill: '#52525B', fontSize: 11 }} axisLine={false} tickLine={false} />
-                  <YAxis domain={[0, 5]} tick={{ fill: '#52525B', fontSize: 11 }} axisLine={false} tickLine={false} />
-                  <ReferenceLine y={3} stroke="#1F2023" strokeDasharray="4 4" />
-                  <Tooltip contentStyle={{ backgroundColor: '#0F1012', border: '1px solid #1F2023', borderRadius: '12px', color: '#F5F5F5', fontSize: '12px' }} cursor={{ fill: '#161719' }} />
-                  <Bar dataKey="avgRating" name="Avg Rating" fill="#F59E0B" radius={[6, 6, 0, 0]} animationDuration={1400} animationEasing="ease-out" />
-                </BarChart>
-              </ResponsiveContainer>
+              <div className="h-[240px] w-full">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={chartData} margin={{ top: 0, right: 0, left: -20, bottom: 0 }}>
+                    <CartesianGrid vertical={false} strokeDasharray="3 3" stroke="#1F2023" />
+                    <XAxis dataKey="subject" tick={{ fill: '#52525B', fontSize: 10, fontWeight: 600 }} axisLine={false} tickLine={false} />
+                    <YAxis domain={[0, 5]} tick={{ fill: '#52525B', fontSize: 10, fontWeight: 600 }} axisLine={false} tickLine={false} />
+                    <ReferenceLine y={3} stroke="#1F2023" strokeDasharray="4 4" />
+                    <Tooltip 
+                      cursor={{ fill: 'rgba(245, 158, 11, 0.05)' }}
+                      contentStyle={{ backgroundColor: '#08090A', border: '1px solid #1F2023', borderRadius: '12px', padding: '12px' }}
+                      itemStyle={{ color: '#F59E0B', fontSize: '12px', fontWeight: 'bold' }}
+                      labelStyle={{ color: '#F5F5F5', marginBottom: '4px', fontSize: '11px', fontWeight: '800' }}
+                    />
+                    <Bar dataKey="avgRating" name="Avg Rating" fill="#F59E0B" radius={[4, 4, 0, 0]} />
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
             )}
           </div>
         </div>
 
         {/* PENDING TABLE */}
-        <div className="opacity-0 animate-fade-up bg-[#0F1012] border border-[#1F2023] rounded-2xl overflow-hidden mb-8" style={{ animationDelay: '700ms', animationFillMode: 'forwards' }}>
-          <div className="px-6 py-4 border-b border-[#1F2023] flex justify-between items-center">
-            <h3 className="font-display text-base font-bold text-[#F5F5F5]">Pending Review</h3>
-            <span className="bg-[#F59E0B]/10 text-[#F59E0B] border border-[#F59E0B]/20 rounded-full px-3 py-1 text-xs">{pendingNotes.length} notes</span>
+        <div className="opacity-0 animate-fade-up bg-[#0F1012] border border-[#1F2023] rounded-2xl overflow-hidden mb-8 shadow-xl shadow-black/20" style={{ animationDelay: '700ms', animationFillMode: 'forwards' }}>
+          <div className="px-6 py-5 border-b border-[#1F2023] flex flex-wrap gap-4 justify-between items-center">
+            <div className="flex items-center gap-3">
+              <h3 className="font-display text-base font-bold text-[#F5F5F5]">Pending Review</h3>
+              <span className="bg-[#F59E0B]/10 text-[#F59E0B] border border-[#F59E0B]/20 rounded-full px-3 py-0.5 text-[10px] font-bold uppercase tracking-wider">{pendingNotes.length}</span>
+            </div>
+            <Link to="/admin/pending" className="text-xs font-bold text-[#00C896] hover:text-[#00E5B0] transition-colors">View All &rarr;</Link>
           </div>
           <div className="overflow-x-auto">
-            <table className="w-full text-left">
+            <table className="w-full text-left min-w-[800px]">
               <thead className="bg-[#08090A]">
                 <tr>
-                  {['TITLE', 'SUBJECT', 'UPLOADER', 'TYPE', 'SUBMITTED', 'ACTIONS'].map(h => (
-                    <th key={h} className="px-6 py-4 text-xs font-semibold text-[#52525B] uppercase tracking-widest border-b border-[#1F2023]">{h}</th>
+                  {['TITLE', 'SUBJECT', 'UPLOADER', 'SUBMITTED', 'ACTIONS'].map(h => (
+                    <th key={h} className="px-6 py-4 text-[10px] font-bold text-[#52525B] uppercase tracking-[0.15em] border-b border-[#1F2023]">{h}</th>
                   ))}
                 </tr>
               </thead>
               <tbody className="divide-y divide-[#1F2023]">
                 {pendingNotes.length === 0 && (
                   <tr>
-                    <td colSpan={6} className="px-6 py-8 text-center text-[#52525B] text-sm">No pending notes</td>
-                  </tr>
-                )}
-                {pendingNotes.map((note, i) => (
-                  <tr key={note._id} className="opacity-0 animate-fade-up hover:bg-[#161719]/50 transition-colors group" style={{ animationDelay: `${50 * i}ms`, animationFillMode: 'forwards' }}>
-                    <td className="px-6 py-4">
-                      <div className="max-w-[200px] truncate font-medium text-[#F5F5F5] text-sm" title={note.title}>{note.title}</div>
-                    </td>
-                    <td className="px-6 py-4">
-                      <SubjectBadge subject={note.subject?.name ?? note.subject} /></td>
-                    <td className="px-6 py-4">
-                      <div className="flex items-center gap-2">
-                        <div className="w-6 h-6 rounded-full bg-[#00C896]/10 text-[#00C896] text-[10px] font-bold flex items-center justify-center">
-                          {note.user?.name?.[0]}
-                        </div>
-                        <span className="text-[#A1A1AA] text-sm">{note.user?.name}</span>
+                    <td colSpan={5} className="px-6 py-12 text-center">
+                      <div className="flex flex-col items-center gap-2 opacity-40">
+                        <div className="text-2xl">✨</div>
+                        <p className="text-[#52525B] text-sm font-medium">All caught up! No pending notes.</p>
                       </div>
                     </td>
+                  </tr>
+                )}
+                {pendingNotes.slice(0, 5).map((note, i) => (
+                  <tr key={note._id} className="hover:bg-[#161719]/50 transition-colors group">
                     <td className="px-6 py-4">
-                      <span className="font-mono text-xs text-[#52525B] bg-[#161719] border border-[#1F2023] rounded-lg px-2 py-0.5">{note.fileUrl ? 'PDF' : 'TXT'}</span>
+                      <div className="max-w-[240px] truncate font-bold text-[#F5F5F5] text-sm" title={note.title}>{note.title}</div>
+                      <div className="text-[10px] text-[#52525B] font-mono mt-0.5">ID: {note._id.slice(-8)}</div>
                     </td>
-                    <td className="px-6 py-4 text-[#52525B] text-sm">{new Date(note.createdAt).toLocaleDateString()}</td>
+                    <td className="px-6 py-4">
+                      <SubjectBadge subject={note.subject?.name ?? note.subject} />
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="flex items-center gap-2.5">
+                        <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-[#00C896]/20 to-[#00C896]/5 border border-[#00C896]/20 text-[#00C896] text-[10px] font-bold flex items-center justify-center">
+                          {note.user?.name?.[0]}
+                        </div>
+                        <span className="text-[#A1A1AA] text-sm font-medium">{note.user?.name}</span>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 text-[#52525B] text-xs font-medium tabular-nums">{new Date(note.createdAt).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}</td>
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-2">
-                        <Link to={`/notes/${note._id}`} className="text-[#00C896] hover:underline text-xs">View</Link>
+                        <Link to={`/notes/${note._id}`} className="p-2 text-[#52525B] hover:text-[#00C896] transition-colors" title="View details">
+                          <FileText size={16} />
+                        </Link>
                         <button
                           onClick={() => handleApprove(note._id)}
                           disabled={isLoading}
-                          className="bg-[#10B981]/10 text-[#10B981] border border-[#10B981]/20 hover:bg-[#10B981] hover:text-[#08090A] hover:scale-105 active:scale-95 rounded-lg px-3 py-1.5 text-xs font-semibold transition-all disabled:opacity-50"
+                          className="bg-[#10B981]/10 text-[#10B981] border border-[#10B981]/20 hover:bg-[#10B981] hover:text-[#08090A] rounded-lg px-3 py-1.5 text-xs font-bold transition-all disabled:opacity-50"
                         >
                           Approve
                         </button>
                         <button
                           onClick={() => handleReject(note._id)}
                           disabled={isLoading}
-                          className="bg-[#EF4444]/10 text-[#EF4444] border border-[#EF4444]/20 hover:bg-[#EF4444] hover:text-white hover:scale-105 active:scale-95 rounded-lg px-3 py-1.5 text-xs font-semibold transition-all disabled:opacity-50"
+                          className="bg-[#EF4444]/10 text-[#EF4444] border border-[#EF4444]/20 hover:bg-[#EF4444] hover:text-white rounded-lg px-3 py-1.5 text-xs font-bold transition-all disabled:opacity-50"
                         >
                           Reject
                         </button>
@@ -301,57 +299,66 @@ export default function AdminDashboard() {
           </div>
         </div>
 
-        {/* RECENTLY APPROVED TABLE */}
-        <div className="opacity-0 animate-fade-up bg-[#0F1012] border border-[#1F2023] rounded-2xl overflow-hidden mb-8" style={{ animationDelay: '800ms', animationFillMode: 'forwards' }}>
-          <div className="px-6 py-4 border-b border-[#1F2023] flex justify-between items-center">
-            <h3 className="font-display text-base font-bold text-[#F5F5F5]">Recently Approved</h3>
+        {/* ALL NOTES TABLE */}
+        <div className="opacity-0 animate-fade-up bg-[#0F1012] border border-[#1F2023] rounded-2xl overflow-hidden mb-8 shadow-xl shadow-black/20" style={{ animationDelay: '800ms', animationFillMode: 'forwards' }}>
+          <div className="px-6 py-5 border-b border-[#1F2023] flex flex-wrap gap-4 justify-between items-center">
+            <div className="flex items-center gap-3">
+              <h3 className="font-display text-base font-bold text-[#F5F5F5]">Recent Platform Activity</h3>
+              <span className="bg-[#00C896]/10 text-[#00C896] border border-[#00C896]/20 rounded-full px-3 py-0.5 text-[10px] font-bold uppercase tracking-wider">{notes.length} total</span>
+            </div>
+            <Link to="/admin/all" className="text-xs font-bold text-[#00C896] hover:text-[#00E5B0] transition-colors">Manage Library &rarr;</Link>
           </div>
           <div className="overflow-x-auto">
-            <table className="w-full text-left">
+            <table className="w-full text-left min-w-[800px]">
               <thead className="bg-[#08090A]">
                 <tr>
-                  {['TITLE', 'SUBJECT', 'UPLOADER', 'AVG RATING', 'SAVES', 'DATE', 'ACTIONS'].map(h => (
-                    <th key={h} className="px-6 py-4 text-xs font-semibold text-[#52525B] uppercase tracking-widest border-b border-[#1F2023]">{h}</th>
+                  {['TITLE', 'SUBJECT', 'STATUS', 'DATE', 'ACTIONS'].map(h => (
+                    <th key={h} className="px-6 py-4 text-[10px] font-bold text-[#52525B] uppercase tracking-[0.15em] border-b border-[#1F2023]">{h}</th>
                   ))}
                 </tr>
               </thead>
               <tbody className="divide-y divide-[#1F2023]">
-                {approvedNotes.length === 0 && (
+                {notes.length === 0 ? (
                   <tr>
-                    <td colSpan={7} className="px-6 py-8 text-center text-[#52525B] text-sm">No approved notes</td>
+                    <td colSpan={5} className="px-6 py-12 text-center text-[#52525B] text-sm">No notes found on the platform.</td>
                   </tr>
-                )}
-                {approvedNotes.map((note, i) => (
-                  <tr key={note._id} className="opacity-0 animate-fade-up hover:bg-[#161719]/50 transition-colors group" style={{ animationDelay: `${50 * i}ms`, animationFillMode: 'forwards' }}>
-                    <td className="px-6 py-4">
-                      <div className="max-w-[200px] truncate font-medium text-[#F5F5F5] text-sm" title={note.title}>{note.title}</div>
-                    </td>
-                    <td className="px-6 py-4">
-                      <SubjectBadge subject={note.subject?.name ?? note.subject} /></td>
-                    <td className="px-6 py-4">
-                      <div className="flex items-center gap-2">
-                        <div className="w-6 h-6 rounded-full bg-[#00C896]/10 text-[#00C896] text-[10px] font-bold flex items-center justify-center">
-                          {note.user?.name?.[0]}
+                ) : (
+                  notes.slice(0, 10).map((note, i) => (
+                    <tr key={note._id} className="hover:bg-[#161719]/50 transition-colors group">
+                      <td className="px-6 py-4">
+                        <div className="max-w-[240px] truncate font-bold text-[#F5F5F5] text-sm">{note.title}</div>
+                      </td>
+                      <td className="px-6 py-4">
+                        <SubjectBadge subject={note.subject?.name ?? note.subject} />
+                      </td>
+                      <td className="px-6 py-4">
+                        <span className={`text-[10px] font-bold uppercase px-2 py-0.5 rounded-lg border ${
+                          note.status === 'approved' ? 'bg-[#10B981]/10 text-[#10B981] border-[#10B981]/20' :
+                          note.status === 'pending' ? 'bg-[#F59E0B]/10 text-[#F59E0B] border-[#F59E0B]/20' :
+                          'bg-[#EF4444]/10 text-[#EF4444] border-[#EF4444]/20'
+                        }`}>
+                          {note.status}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 text-[#52525B] text-xs font-medium">{new Date(note.createdAt).toLocaleDateString()}</td>
+                      <td className="px-6 py-4">
+                        <div className="flex items-center gap-2">
+                          <Link to={`/notes/${note._id}`} className="p-2 text-[#52525B] hover:text-[#00C896] transition-colors">
+                            <FileText size={16} />
+                          </Link>
+                          <button
+                            onClick={() => handleDelete(note._id)}
+                            className="p-2 text-[#52525B] hover:text-[#EF4444] transition-colors"
+                          >
+                            <svg size={16} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4">
+                              <path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                            </svg>
+                          </button>
                         </div>
-                        <span className="text-[#A1A1AA] text-sm">{note.user?.name}</span>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 text-[#F59E0B] text-sm font-medium">★ {note.avgRating?.toFixed(1)}</td>
-                    <td className="px-6 py-4 text-[#52525B] text-sm">{note.saves?.length ?? 0}</td>
-                    <td className="px-6 py-4 text-[#52525B] text-sm">{new Date(note.createdAt).toLocaleDateString()}</td>
-                    <td className="px-6 py-4">
-                      <div className="flex items-center gap-2">
-                        <button
-                          onClick={() => handleDelete(note._id)}
-                          disabled={isLoading}
-                          className="text-[#52525B] hover:text-[#EF4444] text-xs transition-colors disabled:opacity-50"
-                        >
-                          Delete
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
+                      </td>
+                    </tr>
+                  ))
+                )}
               </tbody>
             </table>
           </div>
