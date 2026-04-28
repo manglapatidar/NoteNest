@@ -28,7 +28,8 @@ connectDB()
 app.use(cors({
     origin: [
         "http://localhost:5173",
-        "https://notenest-qlyi.onrender.com"
+        "https://notenest-qlyi.onrender.com",
+        "https://notenest-1-24gm.onrender.com"
     ],
     credentials: true
 }))
