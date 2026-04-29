@@ -29,8 +29,7 @@ app.use(cors({
     origin: [
         "http://localhost:5173",
         "http://localhost:5174",
-        "https://notenest-qlyi.onrender.com",
-        "https://notenest-1-24gm.onrender.com"
+        
     ],
     credentials: true
 }))
@@ -55,19 +54,16 @@ app.use("/api/admin", adminRoutes)
 // Static Files
 app.use("/uploads", express.static(path.join(__dirname, "uploads")))
 
-// Production SPA Routing
-if (process.env.NODE_ENV === "production") {
-    const buildPath = path.join(__dirname, "../client/dist");
+const buildPath = path.resolve(__dirname, '../client/dist');
+ 
+// if(process.env.NODE_ENV === "production"){
     app.use(express.static(buildPath));
-    
-    // Crash-proof SPA handler for all non-API routes
-    app.use((req, res, next) => {
-        if (!req.path.startsWith('/api')) {
-            return res.sendFile(path.join(buildPath, "index.html"));
-        }
-        next();
+ 
+    app.get('/*splat', (req, res) => {
+        res.sendFile(path.join(buildPath, 'index.html'))
     });
-}
+ 
+ 
 
 // Error Handling
 app.use(errorHandler)
