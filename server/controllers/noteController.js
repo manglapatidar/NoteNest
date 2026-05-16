@@ -301,7 +301,7 @@ const updateNoteFile = async (req, res) => {
           if (err) console.log("Old file delete error:", err);
         });
       }
-      note.fileUrl  = `/uploads/${req.file.filename}`;
+      note.fileUrl = `/uploads/${req.file.filename}`;
       note.fileName = req.file.originalname;
       note.fileType = req.file.mimetype;
       note.fileSize = req.file.size;

@@ -34,8 +34,8 @@ app.use(cors({
     credentials: true
 }))
 
-app.use(express.json())
-app.use(express.urlencoded({ extended: true }))
+app.use(express.json({ limit: '50mb' }))
+app.use(express.urlencoded({ limit: '50mb', extended: true }))
 
 
 // API Routes
@@ -55,7 +55,7 @@ const buildPath = path.resolve(__dirname, '../client/dist');
 // if(process.env.NODE_ENV === "production"){
     app.use(express.static(buildPath));
  
-    app.get('/*splat', (req, res) => {
+    app.get(/.*/, (req, res) => {
         res.sendFile(path.join(buildPath, 'index.html'))
     });
  

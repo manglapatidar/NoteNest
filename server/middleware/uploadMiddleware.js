@@ -1,25 +1,29 @@
 import multer from "multer";
 import path from "path";
+import fs from "fs";
 import { fileURLToPath } from "url";
 
-// __dirname setup (ES module ke liye)
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Storage config
+// Uploads folder banana agar exist nahi karta
+const uploadDir = path.join(__dirname, '..', 'uploads');
+if (!fs.existsSync(uploadDir)) {
+  fs.mkdirSync(uploadDir, { recursive: true });
+}
+
+// Local disk storage
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, path.join(__dirname, "../uploads")); 
+    cb(null, uploadDir);
   },
   filename: (req, file, cb) => {
-    const uniqueName =
-      Date.now() + "-" + Math.round(Math.random() * 1e9);
-
-    cb(null, uniqueName + path.extname(file.originalname));
-  },
+    const uniqueName = `${Date.now()}-${file.originalname.replace(/\s+/g, '_')}`;
+    cb(null, uniqueName);
+  }
 });
 
-// File filter (sirf PDF allow)
+// File filter — sirf PDF
 const fileFilter = (req, file, cb) => {
   if (file.mimetype === "application/pdf") {
     cb(null, true);
@@ -28,10 +32,10 @@ const fileFilter = (req, file, cb) => {
   }
 };
 
-// Multer upload
-const upload = multer({
-  storage,
+const upload = multer({ 
+  storage, 
   fileFilter,
+  limits: { fileSize: 10 * 1024 * 1024 } // 10MB max
 });
 
 export default upload;
